@@ -18,11 +18,11 @@ bool AddressBookParser::startElement(const QString&,
     else if (tagName == "array") {
         ++iteration;
         currentItem = new QTreeWidgetItem(currentItem);
-        currentItem->setText(0, "School N" + QString::number(iteration));
+        currentItem->setText(0, "element N" + QString::number(iteration));
     }
-    else if (tagName == "LINK") {
+    else if (tagName == "LINK" || tagName == "WebSite") {
         currentItem = new QTreeWidgetItem(currentItem);
-        currentItem->setText(0, "LINK");
+        currentItem->setText(0, tagName);
     } else {
         currentItem = new QTreeWidgetItem(currentItem);
     }
@@ -36,11 +36,9 @@ bool AddressBookParser::characters(const QString& strText) {
 
 bool AddressBookParser::endElement(const QString&, const QString&, const QString& str) {
     if (str != "array" && str != "catalog" && str != "LINK") {
-        /*qDebug() << "TagName:" << str
-                 << "\tText:" << currentText;*/
         currentItem->setText(0, currentText);
         currentItem = currentItem->parent();
-    } else if (str == "LINK") {
+    } else if (str == "LINK" || str == "WebSite") {
         /*qDebug() << "Link alarm!:" << str
                  << "\tText:" << currentText;*/
         currentItem = currentItem->parent();

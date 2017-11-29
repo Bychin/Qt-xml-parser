@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGridLayout>
+
 
 namespace Ui {
 class MainWindow;
@@ -17,11 +19,15 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QGridLayout* mainLayout;
+    QWidget* mainWidget;
 
 private slots:
     void CloseWindow();
     void ClearTree();
     void OpenFile();
+    void OpenQuery();
+    void ExecuteQuery();
 };
 
 #endif // MAINWINDOW_H
