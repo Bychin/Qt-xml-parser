@@ -3,14 +3,15 @@
 
 #include <QMainWindow>
 #include <QGridLayout>
+#include <QDockWidget>
+#include <QTextEdit>
 
 
 namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
@@ -21,6 +22,8 @@ private:
     Ui::MainWindow *ui;
     QGridLayout* mainLayout;
     QWidget* mainWidget;
+    QDockWidget* dock;
+    QTextEdit* text;
 
 private slots:
     void CloseWindow();

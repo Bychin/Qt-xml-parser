@@ -6,10 +6,10 @@
 
 QT     += \
        core gui \
-       xml
+       xml \
+       xmlpatterns
 
-CONFIG += c++11 \
-          console
+CONFIG += c++11
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

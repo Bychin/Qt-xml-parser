@@ -5,31 +5,35 @@
 #include <QMenu>
 #include <QFileDialog>
 #include <QtXmlPatterns>
+#include <QErrorMessage>
 
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
+    dock = new QDockWidget("Query answer", this, Qt::Popup);
+    text = new QTextEdit;
+    dock->resize(600, 400);
+    dock->hide();
+
     QMenu* mainMenu = new QMenu("Menu");
     mainMenu->addAction("&Open File", this, SLOT(OpenFile()), Qt::CTRL + Qt::Key_O);
     mainMenu->addAction("&Close All", this, SLOT(ClearTree()), Qt::CTRL + Qt::Key_C);
     mainMenu->addSeparator();
+    mainMenu->addAction("&Execute XQuery", this, SLOT(OpenQuery()), Qt::CTRL + Qt::Key_E);
+    mainMenu->addSeparator();
     mainMenu->addAction("&Exit", this, SLOT(CloseWindow()), Qt::CTRL + Qt::Key_Q);
     ui->menuBar->addMenu(mainMenu);
 
-    connect(ui->pushButtonOpenFromFile, SIGNAL(clicked()), this, SLOT(OpenQuery()));
     connect(ui->pushButtonExecute, SIGNAL(clicked()), this, SLOT(ExecuteQuery()));
 
     mainLayout = new QGridLayout;
-    mainLayout->addWidget(ui->treeView, 0, 0, 6, 4);
-    mainLayout->addWidget(ui->lineEdit, 7, 0, 1, 3);
-    mainLayout->addWidget(ui->pushButtonExecute, 7, 3, 1, 1);
-    mainLayout->addWidget(ui->pushButtonOpenFromFile,  8, 0, 1, 4);
+    mainLayout->addWidget(ui->my_tree, 0, 0, 3, 2);
+    mainLayout->addWidget(ui->textEdit, 4, 0, 2, 1);
+    mainLayout->addWidget(ui->pushButtonExecute, 4, 1, 1, 1);
     mainWidget = new QWidget;
     mainWidget->setLayout(mainLayout);
     setCentralWidget(mainWidget);
-
-    ui->treeView->setModel(ui->my_tree->model());
 }
 
 MainWindow::~MainWindow() {
@@ -37,7 +41,7 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::CloseWindow() {
-    CloseWindow();
+    QApplication::quit();
 }
 
 void MainWindow::ClearTree() {
@@ -52,27 +56,46 @@ void MainWindow::OpenFile() {
     AddressBookParser handler(ui->my_tree, filename);
     QXmlInputSource source(&file);
     reader.setContentHandler(&handler);
-    reader.parse(source);
+    if (!reader.parse(source)) {
+        (new QErrorMessage(this))->showMessage("Cannot parse file!");
+    }
 }
 
 void MainWindow::OpenQuery() {
     QString filepath = QFileDialog::getOpenFileName(this, "Choose query-file", "/home", "*.xq");
-    QString query = "";
     QFile file(filepath);
     if (file.open(QIODevice::ReadOnly)) {
-        query = file.readAll();
+        QString query = file.readAll();
         file.close();
-        ui->lineEdit->setText(query);
+        ui->textEdit->setText(query);
         ExecuteQuery();
     } else {
-        // throw exc window!
-        // return
+        (new QErrorMessage(this))->showMessage("Cannot open file with query!");
+        return;
     }
 }
 
 void MainWindow::ExecuteQuery() {
-    QString query = ui->lineEdit->text();
+    QString query = ui->textEdit->toPlainText();
     if (query == "")
-        return;
-
+        OpenQuery();
+    else {
+        QXmlQuery xml_query;
+        xml_query.setQuery(query);
+        if (!xml_query.isValid()) {
+            (new QErrorMessage(this))->showMessage("The query is not valid!");
+            return;
+        }
+        QString answer;
+        if (!xml_query.evaluateTo(&answer)) {
+            (new QErrorMessage(this))->showMessage("Cannot evaluate the query!");
+            return;
+        }
+        text->setText(answer);
+        dock->setWidget(text);
+        dock->setFloating(true);
+        dock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
+        dock->setAllowedAreas(Qt::NoDockWidgetArea);
+        dock->show();
+    }
 }
