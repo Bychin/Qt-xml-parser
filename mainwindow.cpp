@@ -50,6 +50,8 @@ void MainWindow::ClearTree() {
 
 void MainWindow::OpenFile() {
     QString filepath = QFileDialog::getOpenFileName(this, "Choose file", "/home", "*.xml");
+    if (filepath.isEmpty())
+        return;
     QString filename = filepath.section("/",-1,-1);
     QFile file(filepath);
     QXmlSimpleReader reader;
@@ -63,6 +65,8 @@ void MainWindow::OpenFile() {
 
 void MainWindow::OpenQuery() {
     QString filepath = QFileDialog::getOpenFileName(this, "Choose query-file", "/home", "*.xq");
+    if (filepath.isEmpty())
+        return;
     QFile file(filepath);
     if (file.open(QIODevice::ReadOnly)) {
         QString query = file.readAll();

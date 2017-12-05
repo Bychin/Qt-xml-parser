@@ -39,8 +39,6 @@ bool AddressBookParser::endElement(const QString&, const QString&, const QString
         currentItem->setText(0, currentText);
         currentItem = currentItem->parent();
     } else if (str == "LINK" || str == "WebSite") {
-        /*qDebug() << "Link alarm!:" << str
-                 << "\tText:" << currentText;*/
         currentItem = currentItem->parent();
     } else if (str == "array") {
         currentItem = currentItem->parent();
@@ -55,4 +53,3 @@ bool AddressBookParser::fatalError(const QXmlParseException& exception) {
              << ", Message:" << exception.message();
     return false;
 }
-
