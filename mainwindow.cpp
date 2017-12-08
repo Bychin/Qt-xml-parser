@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 
     QMenu* mainMenu = new QMenu("Menu");
     mainMenu->addAction("&Open File", this, SLOT(OpenFile()), Qt::CTRL + Qt::Key_O);
-    mainMenu->addAction("&Close All", this, SLOT(ClearTree()), Qt::CTRL + Qt::Key_C);
+    mainMenu->addAction("&Close All", this, SLOT(ClearTree()));
     mainMenu->addSeparator();
     mainMenu->addAction("&Execute XQuery", this, SLOT(OpenQuery()), Qt::CTRL + Qt::Key_E);
     mainMenu->addSeparator();
@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     mainWidget = new QWidget;
     mainWidget->setLayout(mainLayout);
     setCentralWidget(mainWidget);
+    setWindowTitle("XML Parser");
 }
 
 MainWindow::~MainWindow() {

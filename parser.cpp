@@ -1,5 +1,5 @@
 #include "parser.h"
-
+#include <QDebug>
 
 AddressBookParser::AddressBookParser(QTreeWidget* tree, const QString& title) {
         treeWidget = tree;
@@ -18,12 +18,14 @@ bool AddressBookParser::startElement(const QString&,
     else if (tagName == "array") {
         ++iteration;
         currentItem = new QTreeWidgetItem(currentItem);
-        currentItem->setText(0, "element N" + QString::number(iteration));
+        //currentItem->setText(0, "element N" + QString::number(iteration));
     }
     else if (tagName == "LINK" || tagName == "WebSite") {
         currentItem = new QTreeWidgetItem(currentItem);
         currentItem->setText(0, tagName);
-    } else {
+    }
+
+    else {
         currentItem = new QTreeWidgetItem(currentItem);
     }
     return true;
@@ -36,8 +38,11 @@ bool AddressBookParser::characters(const QString& strText) {
 
 bool AddressBookParser::endElement(const QString&, const QString&, const QString& str) {
     if (str != "array" && str != "catalog" && str != "LINK") {
+        if (str == "EDU_NAME" || str == "FullName") {
+                currentItem->parent()->setText(0, currentText);
+        }
         currentItem->setText(0, currentText);
-        currentItem = currentItem->parent();
+        currentItem = currentItem->parent();        
     } else if (str == "LINK" || str == "WebSite") {
         currentItem = currentItem->parent();
     } else if (str == "array") {

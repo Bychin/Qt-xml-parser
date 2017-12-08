@@ -16,6 +16,7 @@ private:
     QTreeWidgetItem *currentItem;
     int iteration = 0;
     QString parsing_title;
+    QString temp_text;
 public:
     AddressBookParser(QTreeWidget* tree, const QString&);
     bool startElement(const QString&,
